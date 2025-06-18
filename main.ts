@@ -19,12 +19,29 @@ server.tool(
         city: z.string().describe('City Name'),
     },
     async ({city}) => {                                      // Action performed when tool is called
+        const respose = await fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${city}&count=10&language=en&format=json`)
+        const data = await respose.json()
+
+        if (data.length === 0){
+            return{
+            content: [                                           // Response content
+                    {
+                        type: 'text',
+                        text: `No information found for ${city}`
+                    }
+                ]
+            }
+        }
+        const {latitude, longitude} = data[0]
+
+        const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&current=temperature_2m,precipitation,is_day,rain&forecast_days=1`)
+        const weatherData = await weatherResponse.json()
 
         return{
         content: [                                           // Response content
                 {
                     type: 'text',
-                    text: `The weather in ${city} is sunny`
+                    text: JSON.stringify(weatherData, null, 2)
                 }
             ]
         }
