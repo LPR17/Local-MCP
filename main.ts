@@ -32,7 +32,7 @@ server.tool(
                 ]
             }
         }
-        const {latitude, longitude} = data[0]
+        const {latitude, longitude} = data.results[0]
 
         const weatherResponse = await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&hourly=temperature_2m&current=temperature_2m,precipitation,is_day,rain&forecast_days=1`)
         const weatherData = await weatherResponse.json()
