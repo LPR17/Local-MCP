@@ -1,28 +1,28 @@
+//Import Dependencies
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
 import {z} from 'zod'
 
-//First we create the server
-//Main interface with MCP. Manages coms between client<->server
-
+//First Instantiate the MCP server with basic metadata
+//This server acts as the main interface to handle communication with the client
 const server = new McpServer({
-    name : 'Test',
-    version : '1.0.0'
+    name : 'Test',  // Server name
+    version : '1.0.0'  // Server version
 })
 
 //Tools
 //Tools help LLM to make actions through the server
-
 server.tool(
     'fetch-weather', //Tool title
     'Tool to fetch the weather of a city', //Tool Description
-    {
+    { //Parameters
         city: z.string().describe('City Name'),
         country: z.string().describe('Country code'),
     },
-    async ({city}) => {
-        //Action
+    async ({city}) => {                                      // Action performed when tool is called
+
         return{
-        content: [
+        content: [                                           // Response content
                 {
                     type: 'text',
                     text: `The weather in ${city} is sunny`
@@ -30,3 +30,7 @@ server.tool(
             ]
         }
     })
+
+//Client connection
+const transport = new StdioServerTransport()
+await server.connect(transport)
